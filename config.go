@@ -10,9 +10,9 @@ import (
 )
 
 // CreateAPISession returns an APISession object
-//v = APIVersion Struct
-//l = Locale as an IETF BCP 47 language tag, defaults to 'en-US'.
-//c = Client software identification token.
+//  v = APIVersion Struct
+//  l = Locale as an IETF BCP 47 language tag, defaults to 'en-US'.
+//  c = Client software identification token.
 func CreateAPISession(v APIVersionStruct, l string, c string) (APISessionStruct, error) {
 	if l == "" {
 		l = "en-US"
@@ -107,6 +107,7 @@ func (c *Client) LoadAndValidate() error {
 		Post(c.url + "/session")
 
 	result := resp.Body()
+	fmt.Println(result)
 	var resultdat map[string]interface{}
 	if err = json.Unmarshal(result, &resultdat); err != nil { //convert the json to go objects
 		return err
