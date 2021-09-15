@@ -10,9 +10,9 @@ import (
 )
 
 // CreateAPISession returns an APISession object
-//  v = APIVersion Struct
-//  l = Locale as an IETF BCP 47 language tag, defaults to 'en-US'.
-//  c = Client software identification token.
+//v = APIVersion Struct
+//l = Locale as an IETF BCP 47 language tag, defaults to 'en-US'.
+//c = Client software identification token.
 func CreateAPISession(v APIVersionStruct, l string, c string) (APISessionStruct, error) {
 	if l == "" {
 		l = "en-US"
@@ -72,15 +72,16 @@ type ErrorStruct struct {
 
 // Client the structure of a client request
 type Client struct {
-	url, username, password string
+	url, username, password, apitoken string
 }
 
 // NewClient creates a new client object
-func NewClient(username, password, url string) *Client {
+func NewClient(username, password, url, apitoken string) *Client {
 	return &Client{
 		url:      url,
 		username: username,
 		password: password,
+		apitoken: apitoken,
 	}
 }
 
@@ -107,7 +108,6 @@ func (c *Client) LoadAndValidate() error {
 		Post(c.url + "/session")
 
 	result := resp.Body()
-	fmt.Println(result)
 	var resultdat map[string]interface{}
 	if err = json.Unmarshal(result, &resultdat); err != nil { //convert the json to go objects
 		return err
