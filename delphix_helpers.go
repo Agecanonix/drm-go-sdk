@@ -1,11 +1,12 @@
 package delphix
 
 import (
+	"encoding/json"
 	"fmt"
-	"gopkg.in/resty.v1"
 	"strings"
 	"time"
-	"encoding/json"
+
+	"gopkg.in/resty.v1"
 )
 
 // CreateGroup creates a new group in Delphix
@@ -13,6 +14,15 @@ func (c *Client) CreateGroup(h *GroupStruct) (
 	interface{}, error) {
 	url := "/group"
 	reference, err := c.executePostJobAndReturnObjectReference(url, h)
+
+	return reference, err
+}
+
+// CreateVDB creates a new VDB in DRM
+func (c *Client) CreateVDB(h *GroupStruct) (
+	interface{}, error) {
+	url := "/provisionSQLVDB"
+	reference, err := c.executePostJobAndReturnVDBInfo(url, h)
 
 	return reference, err
 }
@@ -33,7 +43,6 @@ func (c *Client) UpdateGroup(r string, h *GroupStruct) error {
 
 	return err
 }
-
 
 // WaitforDelphixJob waits for a job to complete
 func (c *Client) WaitforDelphixJob(j string) error {
