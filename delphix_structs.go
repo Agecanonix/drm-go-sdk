@@ -64,7 +64,6 @@ type APIVersionStruct struct {
 	Type string `json:"type,omitempty"`
 }
 
-
 // LoginRequestStruct - Represents a Delphix user authentication request.
 // extends TypedObject
 type LoginRequestStruct struct {
@@ -118,6 +117,33 @@ type GroupStruct struct {
 	Type string `json:"type,omitempty"`
 }
 
+// DRMStruct - Database group.
+// extends NamedUserObject
+type DRMStruct struct {
+	// Optional description for the group.
+	// create = optional
+	// update = optional
+	// maxLength = 1024
+	Dbname string `json:"dbname,omitempty"`
+	// Object name.
+	// create = required
+	// update = optional
+	// maxLength = 256
+	TrouxID string `json:"TrouxID,omitempty"`
+	// Alternate namespace for this object, for replicated and restored
+	// objects.
+	// referenceTo = /delphix-namespace.json
+	// format = objectReference
+	PrimaryVDBOwner string `json:"PrimaryVDBOwner,omitempty"`
+	// The object reference.
+	// format = objectReference
+	// referenceTo = /delphix-persistent-object.json
+	SecondaryVDBOwner string `json:"SecondaryVDBOwner,omitempty"`
+	// Object type.
+	// required = true
+	// format = type
+	Type string `json:"type,omitempty"`
+}
 
 // DiagnosisResultStruct - Details from a diagnosis check that was run due to a failed operation.
 // extends TypedObject
