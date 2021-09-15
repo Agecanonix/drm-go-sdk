@@ -1,14 +1,67 @@
 package delphix
 
 import (
+	"encoding/json"
 	"fmt"
-	"gopkg.in/resty.v1"
 	"log"
 	"net/http"
-	"encoding/json"
+
+	"gopkg.in/resty.v1"
 )
 
 func (c *Client) executePostJobAndReturnObjectReference(u string, p interface{}) (
+	interface{}, error) {
+
+	postBody := p
+	log.Println("postBody:::")
+	log.Println(postBody)
+	//DEBUG
+	tbEnc, err := json.Marshal(postBody)
+	log.Println("tbEnc:::")
+	log.Println(tbEnc)
+	fmt.Println(string(tbEnc))
+	//DEBUG
+	resp, err := resty.R().
+		SetHeader("Content-Type", "application/json").
+		SetBody(postBody).
+		Post(c.url + u)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if http.StatusOK != resp.StatusCode() { //check to make sure our query was good
+		errorMessage := string(resp.Body())
+		err = fmt.Errorf(errorMessage)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	result := resp.Body()
+
+	var resultdat map[string]interface{}
+	if err = json.Unmarshal(result, &resultdat); err != nil { //convert the json to go objects
+		return nil, err
+	}
+
+	if resultdat["status"].(string) == "ERROR" {
+		errorMessage := string(resp.Body())
+		err = fmt.Errorf(errorMessage)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	reference := resultdat["result"].(string)           //grab the vdb reference
+	if jobNumber, ok := resultdat["job"].(string); ok { //grab the job reference
+		c.WaitforDelphixJob(jobNumber)
+	}
+
+	return reference, err
+}
+
+func (c *Client) executePostJobAndReturnVDBInfo(u string, p interface{}) (
 	interface{}, error) {
 
 	postBody := p
@@ -167,4 +220,3 @@ func (c *Client) executeGetReturnBody(u string) (
 	}
 	return resultMap, err //return the query results
 }
-
